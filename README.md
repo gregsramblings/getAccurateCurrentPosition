@@ -21,20 +21,20 @@ This led me to write this very simple JavaScript function.
 
 The option parameters are identical to getCurrentPosition() with the following additions:
 
-- <b>desiredAccuracy</b>: The accuracy in meters that you consider "good enough". 
+- <b>desiredAccuracy</b>: The accuracy in meters that you consider "good enough". Once a location is found that meets this criteria, your callback will be called.
 - <b>maxWait</b>: How long you are willing to wait (in milliseconds) for your desired accuracy.  Once the function runs for
 maxWait milliseconds, it will stop trying and return the last location it was able to acquire. NOTE: If the desired accuracy is not achived before
 the timeout, the onSuccess is still called.  You will need to check the accuracy to confirm that you got what you expected.  I did this because it's a 
 "desired" accuracy, not a "required" accuracy.  You can of course change this easily.
 
-The following params are set for you in getAccurateCurrentPosition:
+The following params also exist for getCurrentPosition() but are set for you in getAccurateCurrentPosition():
 - <b>NOTE: timeout</b>: If not timeout is specified, it will be set to the maxWait value
 - <b>NOTE: enableHighAccuracy</b>: This is forced to true (otherwise, why are you using this function?!)
 
 
 Sample usage:  
 <pre>
-   <b>navigator.geolocation.getAccurateCurrentPosition(onSuccess, onError, { maximumAge:10000, desiredAccuracy:20, maxWait:15000 });</b>
+navigator.geolocation.getAccurateCurrentPosition(onSuccess, onError, {maximumAge:10000, desiredAccuracy:20, maxWait:15000});
 </pre>
 
 Translating the above options into english -- This will attempt to find the device location with an accuracy of at least 20 meters (ignoring any location that was cached by the device more than 10 seconds ago) and it will work for 15 seconds to achieve this accuracy. 
