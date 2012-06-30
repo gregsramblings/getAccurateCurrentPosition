@@ -21,9 +21,8 @@ The following params also exist for getCurrentPosition() but are set for you in 
 </ul>
 
 <h3>Sample usage:</h3>
-[javascript]
-navigator.geolocation.getAccurateCurrentPosition(onSuccess, onError, {maximumAge:10000, desiredAccuracy:20, maxWait:15000});
-[/javascript]
+<code>navigator.geolocation.getAccurateCurrentPosition(onSuccess, onError, {maximumAge:10000, desiredAccuracy:20, maxWait:15000});</code>
+
 Translating the above options into english -- This will attempt to find the device location with an accuracy of at least 20 meters (ignoring any location that was cached by the device more than 10 seconds ago) and it will work for 15 seconds to achieve this accuracy.
 
 Blogged at <a target="_blank" href="http://gregsramblings.com/2012/06/30/improving-geolocation-getcurrentposition-with-getaccuratecurrentposition/">http://gregsramblings.com/2012/06/30/improving-geolocation-getcurrentposition-with-getaccuratecurrentposition/</a>
