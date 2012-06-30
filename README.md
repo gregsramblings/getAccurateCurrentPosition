@@ -1,6 +1,6 @@
 getAccurateCurrentPosition
 ==========================
-The following applies to any geolocation-enabled web browser or the use of the PhoneGap Geolocation API (PhoneGap uses the HTML geolocation API already in Android and iOS and possibly other platforms that I have not tested)
+The following applies to any geolocation-enabled web browser.  This includes the use of the <a target="_blank" href="http://docs.phonegap.com/en/1.8.1/cordova_geolocation_geolocation.md.html#Geolocation">PhoneGap Geolocation API</A> (PhoneGap uses the HTML geolocation API already in Android and iOS and possibly other platforms that I have not tested)
 
 Simple function to complements <a target="_blank" href="http://dev.w3.org/geo/api/spec-source.html">navigator.geolocation</a> - spends more time fine tuning the location before replying
 
