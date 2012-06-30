@@ -29,7 +29,7 @@ navigator.geolocation.getAccurateCurrentPosition = function (geolocationSuccess,
 
     if(!options.maxWait)            options.maxWait = 10000; // Default 10 seconds
     if(!options.desiredAccuracy)    options.desiredAccuracy = 20; // Default 20 meters
-    if(!options.timeout)            options.timeout = 10000; // Default to maxWait
+    if(!options.timeout)            options.timeout = options.maxWait; // Default to maxWait
 
     options.enableHighAccuracy = true; // Force high accuracy (otherwise, why are you using this function?)
 
