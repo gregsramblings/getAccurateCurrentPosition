@@ -1,8 +1,8 @@
 getAccurateCurrentPosition
 ==========================
-<a href="https://github.com/gwilson/getAccurateCurrentPosition" target="_blank"><strong>getAccurateCurrentPosition()</strong></a> is a simple enhancement to to <a href="http://dev.w3.org/geo/api/spec-source.html" target="_blank">navigator.geolocation</a> that provides a more accurate and predictable result.  It is intended for any geolocation-enabled web browser. This is also usable in PhoneGap applications since PhoneGap uses the underlying HTML geolocation APIs already. I have tested this on desktop Chrome, Safari, Firefox and on iOS and Android devices. I have not tested on IE9+ or Opera or Windows devices.
+<a href="https://github.com/gwilson/getAccurateCurrentPosition" target="_blank"><strong>getAccurateCurrentPosition()</strong></a> is a simple enhancement to <a href="http://dev.w3.org/geo/api/spec-source.html" target="_blank">navigator.geolocation</a> that provides a more accurate and predictable result.  It is intended for any geolocation-enabled web browser. This is also usable in PhoneGap applications since PhoneGap uses the underlying HTML geolocation APIs already. I have tested this on desktop Chrome, Safari, Firefox and on iOS and Android devices. I have not tested on IE9+ or Opera or Windows devices.
 <h3>Background:</h3>
-<a href="http://dev.w3.org/geo/api/spec-source.html" target="_blank">navigator.geolocation</a> provides the method <strong>geolocation.getCurrentPosition()</strong> that will return the current location of the device.  This seems easy enough so most developers simply call this method when they need the location. One of the options for this method is "enableHighAccuracy" which obviously implies that we are needing an accurate location. However, I soon discovered that if the device's GPS has not been used recently in the current location, it will take a while for it to acquire a decent location. The getCurrentPosition() success callback will trigger before the phone's GPS hardware can provide anything accurate. In other words, we get a quick response, but not necessarily an accurate response.
+<a href="http://dev.w3.org/geo/api/spec-source.html" target="_blank">navigator.geolocation</a> provides the method <strong>geolocation.getCurrentPosition()</strong> that will return the current location of the device.  This seems easy enough so most developers simply call this method when they need the location. One of the options for this method is "enableHighAccuracy", which obviously implies that you need an accurate location. However, I soon discovered that if the device's GPS has not been used recently in the current location, it will take a while for it to acquire a decent location. The getCurrentPosition() success callback will trigger before the phone's GPS hardware can provide anything accurate. In other words, you get a quick response, but not necessarily an accurate response.
 
 In my own testing with an iPhone 4s and an HTC Inspire, when I would check getCurrentPosition() on the device, I would sometimes get an accuracy of over 1000 meters. Basically, the first location to be acquired is what is passed to the callback. What if you need more accuracy? You can re-call getCurrentPosition() and likely better accuracy because the GPS has had more time to acquire satellites, but how many times will you need to call it?
 
@@ -10,14 +10,13 @@ A better way to do this is to use <strong>navigator.geolocation.watchPosition()<
 
 The option parameters are identical to getCurrentPosition() with the following additions:
 <ul>
-<li><strong>desiredAccuracy</strong>: The accuracy in meters that you consider "good enough". Once a location is found that meets this criteria, your callback will be called.</li>
-<li><strong>maxWait</strong>: How long you are willing to wait (in milliseconds) for your desired accuracy. Once the function runs for maxWait milliseconds, it will stop trying and return the last location it was able to acquire. NOTE: If the desired accuracy is not achived before the timeout, the onSuccess is still called. You will need to check the accuracy to confirm that you got what you expected. I did this because it's a "desired" accuracy, not a "required" accuracy. You can of course change this easily.</li>
+   <li><strong>desiredAccuracy</strong>: The accuracy in meters that you consider "good enough". Once a location is found that meets this criterion, your callback will be called.</li>
+   <li><strong>maxWait</strong>: How long you are willing to wait (in milliseconds) for your desired accuracy. Once the function runs for maxWait milliseconds, it will stop trying and return the last location it was able to acquire. NOTE: If the desired accuracy is not achieved before the timeout, the onSuccess is still called. You will need to check the accuracy to confirm that you got what you expected. I did this because it's a "desired" accuracy, not a "required" accuracy. You can of course change this easily.</li>
 </ul>
-
 The following params also exist for getCurrentPosition() but are set for you in getAccurateCurrentPosition():
 <ul>
-<li><strong>timeout</strong>: If not timeout is specified, it will be set to the maxWait value</li>
-<li><strong>enableHighAccuracy</strong>: This is forced to true (otherwise, why are you using this function?!)</li>
+   <li><strong>timeout</strong>: If no timeout is specified, it will be set to the maxWait value</li>
+   <li><strong>enableHighAccuracy</strong>: This is forced to true (otherwise, why are you using this function?!)</li>
 </ul>
 
 <h3>Sample usage:</h3>
