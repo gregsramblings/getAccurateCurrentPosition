@@ -17,11 +17,12 @@ The following params also exist for getCurrentPosition() but are set for you in 
 <ul>
    <li><strong>timeout</strong>: If no timeout is specified, it will be set to the maxWait value</li>
    <li><strong>enableHighAccuracy</strong>: This is forced to true (otherwise, why are you using this function?!)</li>
+   <li><strong>maximumAge</strong>: This is forced to zero since we only want current location information</li>
 </ul>
 
 <h3>Sample usage:</h3>
-<code>navigator.geolocation.getAccurateCurrentPosition(onSuccess, onError, {maximumAge:10000, desiredAccuracy:20, maxWait:15000});</code>
+<code>navigator.geolocation.getAccurateCurrentPosition(onSuccess, onError, {desiredAccuracy:20, maxWait:15000});</code>
 
-Translating the above options into english -- This will attempt to find the device location with an accuracy of at least 20 meters (ignoring any location that was cached by the device more than 10 seconds ago) and it will work for 15 seconds to achieve this accuracy.
+Translating the above options into english -- This will attempt to find the device location with an accuracy of at least 20 meters and attempt to achieve this accuracy for 15 seconds
 
 Blogged at <a target="_blank" href="http://gregsramblings.com/2012/06/30/improving-geolocation-getcurrentposition-with-getaccuratecurrentposition/">http://gregsramblings.com/2012/06/30/improving-geolocation-getcurrentposition-with-getaccuratecurrentposition/</a>
