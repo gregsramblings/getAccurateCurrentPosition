@@ -1,6 +1,8 @@
 navigator.geolocation.getAccurateCurrentPosition = function (geolocationSuccess, geolocationError, geoprogress, options) {
     var lastCheckedPosition;
     var locationEventCount = 0;
+    
+    options = options || {};
 
     var checkLocation = function (position) {
         lastCheckedPosition = position;
