@@ -2,6 +2,10 @@ navigator.geolocation.getAccurateCurrentPosition = function (geolocationSuccess,
     var lastCheckedPosition;
     var locationEventCount = 0;
     
+    if (geoprogress && geoprogress.constructor.name !== 'Function' && options === undefined){
+        options = geoprogress;
+        geoprogress = function(){};
+    };
     options = options || {};
 
     var checkLocation = function (position) {
