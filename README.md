@@ -21,7 +21,8 @@ The following params also exist for getCurrentPosition() but are set for you in 
 </ul>
 
 <h3>Sample usage:</h3>
-<code>navigator.geolocation.getAccurateCurrentPosition(onSuccess, onError, onProgress, {desiredAccuracy:20, maxWait:15000});</code>
+<code>navigator.geolocation.getAccurateCurrentPosition(onSuccess, onError, onProgress, 
+                                                        {desiredAccuracy:20, maxWait:15000});</code>
 
 Translating the above options into english -- This will attempt to find the device location with an accuracy of at least 20 meters and attempt to achieve this accuracy for 15 seconds
 
