@@ -2,7 +2,12 @@ navigator.geolocation.getAccurateCurrentPosition = function (geolocationSuccess,
     var lastCheckedPosition;
     var locationEventCount = 0;
     
+    if (geoprogress && geoprogress.constructor.name !== 'Function' && options === undefined){
+        options = geoprogress;
+        geoprogress = function(){};
+    };
     options = options || {};
+    options.context = options.context || this;
 
     var checkLocation = function (position) {
         lastCheckedPosition = position;
@@ -14,7 +19,7 @@ navigator.geolocation.getAccurateCurrentPosition = function (geolocationSuccess,
             navigator.geolocation.clearWatch(watchID);
             foundPosition(position);
         } else {
-            geoprogress(position);
+            geoprogress.call(options.context, position);
         }
     }
 
@@ -26,11 +31,11 @@ navigator.geolocation.getAccurateCurrentPosition = function (geolocationSuccess,
     var onError = function (error) {
         clearTimeout(timerID);
         navigator.geolocation.clearWatch(watchID);
-        geolocationError(error);
+        geolocationError.call(options.context, error);
     }
 
     var foundPosition = function (position) {
-        geolocationSuccess(position);
+        geolocationSuccess.call(options.context, position);
     }
 
     if (!options.maxWait)            options.maxWait = 10000; // Default 10 seconds
