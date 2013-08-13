@@ -3,7 +3,7 @@ navigator.geolocation.getAccurateCurrentPosition = function (geolocationSuccess,
         locationEventCount = 0,
         watchID,
         timerID;
-    
+
     options = options || {};
 
     var checkLocation = function (position) {
