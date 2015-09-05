@@ -1,6 +1,7 @@
 navigator.geolocation.getAccurateCurrentPosition = function (geolocationSuccess, geolocationError, geoprogress, options) {
     var bestCheckedPosition,
         locationEventCount = 0,
+        desiredAccuracyCount = 0,
         watchID,
         timerID;
 
@@ -13,10 +14,12 @@ navigator.geolocation.getAccurateCurrentPosition = function (geolocationSuccess,
         }
         locationEventCount = locationEventCount + 1;
 
-        if ((position.coords.accuracy <= options.desiredAccuracy) && (locationEventCount > options.countMin)) {
+        if ((position.coords.accuracy <= options.desiredAccuracy) && 
+            (++desiredAccuracyCount>= options.desiredAccuracyCountMin) &&
+            (locationEventCount > options.countMin)) {
             clearTimeout(timerID);
             navigator.geolocation.clearWatch(watchID);
-            geolocationSuccess(position);
+            geolocationSuccess(bestCheckedPosition);
         }
     };
 
@@ -40,6 +43,8 @@ navigator.geolocation.getAccurateCurrentPosition = function (geolocationSuccess,
             
     if (isNaN(options.maxWait))          options.maxWait = 10000; // Default 10 seconds
     if (isNaN(options.desiredAccuracy))  options.desiredAccuracy = 20; // Default 20 meters
+    if (isNaN(options.desiredAccuracyCountMin))  options.desiredAccuracyCountMin = 1; // Default get first position of desiredAccuracy
+    
     if (isNaN(options.timeout))          options.timeout = options.maxWait; // Default to maxWait
     if (isNaN(options.maximumAge))       options.maximumAge = 0; // Default current locations only
     if (isNaN(options.countMin))         options.countMin = 1; // Default ignore first event because some devices send a cached
