@@ -15,8 +15,8 @@ navigator.geolocation.getAccurateCurrentPosition = function (geolocationSuccess,
         locationEventCount = locationEventCount + 1;
 
         if ((position.coords.accuracy <= options.desiredAccuracy) && 
-            (++desiredAccuracyCount>= options.desiredAccuracyCountMin) &&
-            (locationEventCount > options.countMin)) {
+            (++desiredAccuracyCount >= options.desiredAccuracyCountMin) &&
+            (locationEventCount >= options.countMin)) {
             clearTimeout(timerID);
             navigator.geolocation.clearWatch(watchID);
             geolocationSuccess(bestCheckedPosition);
@@ -41,13 +41,13 @@ navigator.geolocation.getAccurateCurrentPosition = function (geolocationSuccess,
       navigator.geolocation.getCurrentPosition(geolocationSuccess, geolocationError, options);
     };
             
-    if (isNaN(options.maxWait))          options.maxWait = 10000; // Default 10 seconds
-    if (isNaN(options.desiredAccuracy))  options.desiredAccuracy = 20; // Default 20 meters
-    if (isNaN(options.desiredAccuracyCountMin))  options.desiredAccuracyCountMin = 1; // Default get first position of desiredAccuracy
+    if (isNaN(options.maxWait))                 options.maxWait = 10000; // Default 10 seconds
+    if (isNaN(options.desiredAccuracy))         options.desiredAccuracy = 20; // Default 20 meters
+    if (isNaN(options.desiredAccuracyCountMin)) options.desiredAccuracyCountMin = 1; // Default get first position of desiredAccuracy
     
-    if (isNaN(options.timeout))          options.timeout = options.maxWait; // Default to maxWait
-    if (isNaN(options.maximumAge))       options.maximumAge = 0; // Default current locations only
-    if (isNaN(options.countMin))         options.countMin = 1; // Default ignore first event because some devices send a cached
+    if (isNaN(options.timeout))      options.timeout = options.maxWait; // Default to maxWait
+    if (isNaN(options.maximumAge))   options.maximumAge = 0; // Default current locations only
+    if (isNaN(options.countMin))     options.countMin = 2; // Default ignore first event because some devices send a cached
                                                            // location even when maxaimumAge is set to zero
     
     options.enableHighAccuracy = true; // Force high accuracy (otherwise, why are you using this function?)

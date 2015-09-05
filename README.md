@@ -12,6 +12,10 @@ The option parameters are identical to getCurrentPosition() with the following a
 <ul>
    <li><strong>desiredAccuracy</strong>: The accuracy in meters that you consider "good enough". Once a location is found that meets this criterion, your callback will be called.</li>
    <li><strong>maxWait</strong>: How long you are willing to wait (in milliseconds) for your desired accuracy. Once the function runs for maxWait milliseconds, it will stop trying and return the last location it was able to acquire. NOTE: If the desired accuracy is not achieved before the timeout, the onSuccess is still called. You will need to check the accuracy to confirm that you got what you expected. I did this because it's a "desired" accuracy, not a "required" accuracy. You can of course change this easily.</li>
+   <li><strong>countMin</strong>: First event may be cached (even on maximumAge=0). Default 2.
+   <li><strong>desiredAccuracyCountMin</strong>: You may wait for more (accurate) positions. Default 1.
+   <li><strong>enableLowAccuracyOnTimeout</strong>: You may to try to get at least a low accuracy result after maxWait (doubling worst case maxWait). Default false.
+  
 </ul>
 The following params also exist for getCurrentPosition() but are set for you in getAccurateCurrentPosition():
 <ul>
