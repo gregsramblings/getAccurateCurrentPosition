@@ -39,8 +39,8 @@ navigator.geolocation.getAccurateCurrentPosition = function (geolocationSuccess,
     if (!options.maxWait)            options.maxWait = 10000; // Default 10 seconds
     if (!options.desiredAccuracy)    options.desiredAccuracy = 20; // Default 20 meters
     if (!options.timeout)            options.timeout = options.maxWait; // Default to maxWait
-
-    options.maximumAge = 0; // Force current locations only
+    if (!options.maximumAge)         options.maximumAge = 0; // Default current locations only
+    
     options.enableHighAccuracy = true; // Force high accuracy (otherwise, why are you using this function?)
 
     watchID = navigator.geolocation.watchPosition(checkLocation, onError, options);
