@@ -1,5 +1,5 @@
 navigator.geolocation.getAccurateCurrentPosition = function (geolocationSuccess, geolocationError, geoprogress, options) {
-    var lastCheckedPosition,
+    var bestCheckedPosition,
         locationEventCount = 0,
         watchID,
         timerID;
@@ -7,7 +7,10 @@ navigator.geolocation.getAccurateCurrentPosition = function (geolocationSuccess,
     options = options || {};
 
     var checkLocation = function (position) {
-        lastCheckedPosition = position;
+        geoprogress(position);
+        if (!bestCheckedPosition || position.coords.accuracy <= bestCheckedPosition.coords.accuracy) {
+          bestCheckedPosition = position;
+        }
         locationEventCount = locationEventCount + 1;
         // We ignore the first event unless it's the only one received because some devices seem to send a cached
         // location even when maxaimumAge is set to zero
@@ -15,14 +18,12 @@ navigator.geolocation.getAccurateCurrentPosition = function (geolocationSuccess,
             clearTimeout(timerID);
             navigator.geolocation.clearWatch(watchID);
             foundPosition(position);
-        } else {
-            geoprogress(position);
         }
     };
 
     var stopTrying = function () {
         navigator.geolocation.clearWatch(watchID);
-        foundPosition(lastCheckedPosition);
+        foundPosition(bestCheckedPosition);
     };
 
     var onError = function (error) {
