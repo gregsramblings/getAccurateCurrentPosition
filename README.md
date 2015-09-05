@@ -13,7 +13,7 @@ The option parameters are identical to getCurrentPosition() with the following a
    <li><strong>desiredAccuracy=20</strong>: The accuracy in meters that you consider "good enough". Once a location is found that meets this criterion, your callback will be called.</li>
    <li><strong>maxWait=10000</strong>: How long you are willing to wait (in milliseconds) for your desired accuracy. Once the function runs for maxWait milliseconds, it will stop trying and return the best location it was able to acquire. NOTE: If the desired accuracy is not achieved before the timeout, the onSuccess is still called. You will need to check the accuracy to confirm that you got what you expected. I did this because it's a "desired" accuracy, not a "required" accuracy. You can of course change this easily.</li>
    <li><strong>countMin=2</strong>: First event may be cached (even on maximumAge=0).
-   <li><strong>desiredAccuracyCountMin=1</strong>: You may wait for more (accurate) positions.
+   <li><strong>desiredAccuracyCountMin=1</strong>: You may wait and allow for more (accurate) positions. MaxWait is unaffected by this.
    <li><strong>enableLowAccuracyOnTimeout=false</strong>: You may try to get at least a low accuracy result after maxWait (doubling worst case maxWait).  
 </ul>
 The following params also exist for getCurrentPosition() but are set for you in getAccurateCurrentPosition():
@@ -27,6 +27,11 @@ The following params also exist for getCurrentPosition() but are set for you in 
 <code>navigator.geolocation.getAccurateCurrentPosition(onSuccess, onError, onProgress, 
                                                         {desiredAccuracy:20, maxWait:15000});</code>
 
-Translating the above options into english -- This will attempt to find the device location with an accuracy of at least 20 meters and attempt to achieve this accuracy for 15 seconds
+Translating the above options into english -- This will attempt for 15 seconds to find the device location and will return as soon the accuracy is at least 20 meters. Otherwise the best result found is returned.
+
+
+<h3>Recommendation:</h3>
+You should call this function inititally with <code>{maxWait:120000}</code> in the background, so a fix can be aquired.
+Thus, subsequent calls are much quicker. For example <code>{desiredAccuracy:20, desiredAccuracyCountMin:5, maxWait:20000, enableLowAccuracyOnTimeout:true}</code> to allow for the best location out of 5 with an accuracy of at least 20m, if this is possible in the 20s given. If there is no gps position, it will return the best it has.
 
 Blogged at <a target="_blank" href="http://gregsramblings.com/2012/06/30/improving-geolocation-getcurrentposition-with-getaccuratecurrentposition/">http://gregsramblings.com/2012/06/30/improving-geolocation-getcurrentposition-with-getaccuratecurrentposition/</a>
