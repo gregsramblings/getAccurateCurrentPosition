@@ -14,7 +14,7 @@ The option parameters are identical to getCurrentPosition() with the following a
    <li><strong>maxWait=10000</strong>: How long you are willing to wait (in milliseconds) for your desired accuracy. Once the function runs for maxWait milliseconds, it will stop trying and return the best location it was able to acquire. NOTE: If the desired accuracy is not achieved before the timeout, the onSuccess is still called. You will need to check the accuracy to confirm that you got what you expected. I did this because it's a "desired" accuracy, not a "required" accuracy. You can of course change this easily.</li>
    <li><strong>countMin=2</strong>: First event may be cached (even on maximumAge=0).
    <li><strong>desiredAccuracyCountMin=1</strong>: You may wait and allow for more (accurate) positions. MaxWait is unaffected by this.
-   <li><strong>enableLowAccuracyOnTimeout=false</strong>: You may try to get at least a low accuracy result after maxWait (doubling worst case maxWait).  
+   <li><strong>enableLowAccuracy=false</strong>: Simultaneously a low accuracy result is searched (seems to be ignored on Chrome 43).  
 </ul>
 The following params also exist for getCurrentPosition() but are set for you in getAccurateCurrentPosition():
 <ul>
