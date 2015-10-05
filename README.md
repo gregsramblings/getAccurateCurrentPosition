@@ -26,8 +26,8 @@ The following params also exist for getCurrentPosition() but are set for you in 
 
 <h3>Callbacks:</h3>
 <ul>
-   <li><strong>onProgress(Position)</strong>: Standard geolocation <a href="https://developer.mozilla.org/en-US/docs/Web/API/Position">position</a>
-   <li><strong>onError(PositionError)</strong>: Standard geolocation  <a href="https://developer.mozilla.org/en-US/docs/Web/API/PositionError">Positionerror</a>
+   <li><strong>onProgress(Position)</strong>: Standard geolocation <a href="https://developer.mozilla.org/en-US/docs/Web/API/Position">Position</a>
+   <li><strong>onError(PositionError)</strong>: Standard geolocation  <a href="https://developer.mozilla.org/en-US/docs/Web/API/PositionError">PositionError</a>
    <li><strong>onSuccess(Position, resultString)</strong>: resultString is 'success' if desired accuracy is met or 'timeout'
 </ul>
 
