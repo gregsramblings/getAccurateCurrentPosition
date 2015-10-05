@@ -8,6 +8,7 @@ In my own testing with an iPhone 4s and an HTC Inspire, when I would check getCu
 
 A better way to do this is to use <strong>navigator.geolocation.watchPosition()</strong>. This method will do a callback every time the location changes or every time the device improves the accuracy (based on my observations). In my own testing with a freshly booted device, it will take between 2 and 6 callbacks to get to something highly accurate.  This led me to write this very simple JavaScript function that uses watchPosition() in combination with a simple timer.
 
+<h3>Options:</h3>
 The option parameters are identical to getCurrentPosition() with the following additions:
 <ul>
    <li><strong>desiredAccuracy=20</strong>: The accuracy in meters that you consider "good enough". Once a location is found that meets this criterion, your callback will be called.</li>
@@ -22,6 +23,14 @@ The following params also exist for getCurrentPosition() but are set for you in 
    <li><strong>enableHighAccuracy=true</strong>: This is forced to true (otherwise, why are you using this function?!)</li>
    <li><strong>maximumAge=0</strong>: You may allow a cached position (as a starter).</li>
 </ul>
+
+<h3>Callbacks:</h3>
+<ul>
+   <li><strong>onProgress(Position)</strong>: Standard geolocation <a href="https://developer.mozilla.org/en-US/docs/Web/API/Position">position</a>
+   <li><strong>onError(PositionError)</strong>: Standard geolocation  <a href="https://developer.mozilla.org/en-US/docs/Web/API/PositionError">Positionerror</a>
+   <li><strong>onSuccess(Position, resultString)</strong>: resultString is 'success' if desired accuracy is met or 'timeout'
+</ul>
+
 
 <h3>Sample usage:</h3>
 <code>navigator.geolocation.getAccurateCurrentPosition(onSuccess, onError, onProgress, 

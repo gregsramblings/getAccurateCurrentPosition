@@ -1,0 +1,20 @@
+{
+  "name": "getAccurateCurrentPosition",
+  "version": "0.1.0",
+  "homepage": "https://github.com/zevero/getAccurateCurrentPosition",
+  "authors": [
+    "gwilsen and zevero"
+  ],
+  "description": "Simple function to complement navigator.geolocation - fine tuning the location before replying",
+  "main": "geo.js",
+  "moduleType": [],
+  "keywords": [
+    "geolocation",
+    "enableHighAccuracy",
+    "location",
+    "gps",
+    "html5",
+    "navigator"
+  ],
+  "license": "MIT"
+}
