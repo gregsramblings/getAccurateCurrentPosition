@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>getAccurateCurrentPosition tests</title>
+<style>
+  body { font: 14px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; max-width: 820px; margin: 2em auto; padding: 0 1em; color: #222; }
+  h1 { margin-bottom: 0.2em; }
+  p.lead { color: #666; margin-top: 0; }
+  .test { padding: 0.5em 0.75em; margin: 0.25em 0; border-left: 4px solid #ccc; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px; white-space: pre-wrap; }
+  .pass { border-color: #2ecc71; background: #eafaf1; }
+  .fail { border-color: #e74c3c; background: #fdecea; }
+  .summary { font-weight: 600; font-size: 1.05em; padding: 0.6em 0.75em; margin-top: 1em; border-radius: 4px; }
+  .summary.pass { background: #eafaf1; color: #1e7e44; }
+  .summary.fail { background: #fdecea; color: #b03a2e; }
+  a { color: #2a6df4; }
+</style>
+</head>
+<body>
+<h1>getAccurateCurrentPosition tests</h1>
+<p class="lead">Open in any browser. Tests run automatically. <a href="javascript:location.reload()">Re-run</a></p>
+<div id="results"></div>
+<div id="summary" class="summary"></div>
+
+<script>
+  // Install a mock navigator.geolocation BEFORE loading geo.js so the lib
+  // attaches getAccurateCurrentPosition to this controlled object.
+  let nextWatchID = 1;
+  const watchers = new Map(); // id -> { success, error, options, cleared }
+
+  const mockGeolocation = {
+    watchPosition(success, error, options) {
+      const id = nextWatchID++;
+      watchers.set(id, { success, error, options, cleared: false });
+      return id;
+    },
+    clearWatch(id) {
+      const w = watchers.get(id);
+      if (w) w.cleared = true;
+    },
+    getCurrentPosition() {}
+  };
+
+  // navigator.geolocation is non-writable in modern browsers; use defineProperty.
+  Object.defineProperty(window.navigator, 'geolocation', {
+    value: mockGeolocation,
+    configurable: true,
+    writable: true
+  });
+
+  // Return the most recently installed watcher's live entry from the Map.
+  function lastWatcher() {
+    let latestId = null;
+    for (const id of watchers.keys()) latestId = id;
+    if (latestId == null) return null;
+    const w = watchers.get(latestId);
+    w.id = latestId;
+    return w;
+  }
+
+  function makePosition(accuracy) {
+    return { coords: { latitude: 47.6, longitude: -122.3, accuracy }, timestamp: Date.now() };
+  }
+  function makeError(code, message) { return { code, message }; }
+  function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+</script>
+
+<script src="geo.js"></script>
+
+<script>
+  const results = [];
+
+  async function runTest(name, fn) {
+    const node = document.createElement('div');
+    node.className = 'test';
+    node.textContent = `... ${name}`;
+    document.getElementById('results').appendChild(node);
+    try {
+      await fn();
+      node.className = 'test pass';
+      node.textContent = `PASS  ${name}`;
+      results.push({ name, pass: true });
+    } catch (e) {
+      node.className = 'test fail';
+      node.textContent = `FAIL  ${name}\n      ${e.message}`;
+      results.push({ name, pass: false });
+    }
+  }
+
+  function assert(cond, msg) { if (!cond) throw new Error(msg || 'assertion failed'); }
+  function assertEq(actual, expected, msg) {
+    if (actual !== expected) {
+      throw new Error(`${msg || 'mismatch'}: expected ${JSON.stringify(expected)}, got ${JSON.stringify(actual)}`);
+    }
+  }
+
+  async function runAll() {
+
+    await runTest('happy path: accurate second event triggers success exactly once', async () => {
+      let successCount = 0, errorCount = 0, progressCount = 0, successPos;
+      navigator.geolocation.getAccurateCurrentPosition(
+        p => { successCount++; successPos = p; },
+        e => { errorCount++; },
+        p => { progressCount++; },
+        { desiredAccuracy: 20, maxWait: 500 }
+      );
+      const w = lastWatcher();
+      w.success(makePosition(15)); // first event: ignored even if accurate (cache-buster)
+      w.success(makePosition(10)); // second event: accurate -> success
+      await delay(30);
+      assertEq(successCount, 1, 'success should fire exactly once');
+      assertEq(errorCount, 0, 'no errors');
+      assertEq(progressCount, 1, 'progress fired for the first (ignored) event');
+      assertEq(successPos.coords.accuracy, 10, 'success got the accurate position');
+      assert(w.cleared, 'watch was cleared');
+    });
+
+    await runTest('no progress callback does not crash', async () => {
+      let successCount = 0, errorCount = 0;
+      navigator.geolocation.getAccurateCurrentPosition(
+        p => { successCount++; },
+        e => { errorCount++; },
+        null, // omitted progress
+        { desiredAccuracy: 20, maxWait: 500 }
+      );
+      const w = lastWatcher();
+      w.success(makePosition(100)); // first event, would normally call progress
+      w.success(makePosition(50));  // still not accurate enough
+      w.success(makePosition(5));   // accurate
+      await delay(30);
+      assertEq(successCount, 1, 'success fires once');
+      assertEq(errorCount, 0, 'no errors');
+    });
+
+    await runTest('timeout with NO position calls error (not success with undefined)', async () => {
+      let successCount = 0, errorCount = 0, errorObj;
+      navigator.geolocation.getAccurateCurrentPosition(
+        p => { successCount++; },
+        e => { errorCount++; errorObj = e; },
+        p => {},
+        { desiredAccuracy: 20, maxWait: 40 }
+      );
+      await delay(120);
+      assertEq(successCount, 0, 'success should NOT fire');
+      assertEq(errorCount, 1, 'error fires once');
+      assert(errorObj && errorObj.code === 3, 'error has TIMEOUT code (3)');
+    });
+
+    await runTest('timeout with a position falls back to last-checked', async () => {
+      let successCount = 0, successPos;
+      navigator.geolocation.getAccurateCurrentPosition(
+        p => { successCount++; successPos = p; },
+        e => {},
+        p => {},
+        { desiredAccuracy: 1, maxWait: 80 }
+      );
+      const w = lastWatcher();
+      w.success(makePosition(50));
+      w.success(makePosition(30)); // best we got, but not within 1m
+      await delay(180);
+      assertEq(successCount, 1, 'success fires once on timeout');
+      assertEq(successPos.coords.accuracy, 30, 'returned last-checked position');
+    });
+
+    await runTest('late watchPosition event after timeout does NOT double-fire success', async () => {
+      let successCount = 0;
+      navigator.geolocation.getAccurateCurrentPosition(
+        p => { successCount++; },
+        e => {},
+        p => {},
+        { desiredAccuracy: 20, maxWait: 40 }
+      );
+      const w = lastWatcher();
+      w.success(makePosition(100)); // not accurate, becomes lastCheckedPosition
+      await delay(120);             // let timeout fire -> stopTrying -> success
+      assertEq(successCount, 1, 'success fired once from timeout');
+      // Simulate the in-flight race: a queued watchPosition event arrives AFTER clearWatch.
+      w.success(makePosition(5));
+      await delay(20);
+      assertEq(successCount, 1, 'success did NOT fire again');
+    });
+
+    await runTest('late watchPosition event after success does NOT double-fire', async () => {
+      let successCount = 0;
+      navigator.geolocation.getAccurateCurrentPosition(
+        p => { successCount++; },
+        e => {},
+        p => {},
+        { desiredAccuracy: 20, maxWait: 500 }
+      );
+      const w = lastWatcher();
+      w.success(makePosition(50)); // first event ignored
+      w.success(makePosition(5));  // accurate -> success
+      await delay(20);
+      assertEq(successCount, 1, 'success fired once');
+      // Now simulate stale event
+      w.success(makePosition(5));
+      await delay(20);
+      assertEq(successCount, 1, 'still only once');
+    });
+
+    await runTest('watchPosition error forwards to geolocationError', async () => {
+      let successCount = 0, errorCount = 0, errorObj;
+      navigator.geolocation.getAccurateCurrentPosition(
+        p => { successCount++; },
+        e => { errorCount++; errorObj = e; },
+        p => {},
+        { desiredAccuracy: 20, maxWait: 500 }
+      );
+      const w = lastWatcher();
+      w.error(makeError(1, 'PERMISSION_DENIED'));
+      await delay(30);
+      assertEq(successCount, 0, 'no success');
+      assertEq(errorCount, 1, 'error fired once');
+      assertEq(errorObj.code, 1, 'error code propagated');
+    });
+
+    await runTest('progress fires on inaccurate updates', async () => {
+      const seen = [];
+      navigator.geolocation.getAccurateCurrentPosition(
+        () => {},
+        () => {},
+        p => { seen.push(p.coords.accuracy); },
+        { desiredAccuracy: 10, maxWait: 500 }
+      );
+      const w = lastWatcher();
+      w.success(makePosition(100)); // first (ignored for accuracy) -> progress
+      w.success(makePosition(50));  // not accurate enough -> progress
+      w.success(makePosition(20));  // not accurate enough -> progress
+      await delay(30);
+      assertEq(seen.length, 3, 'progress fired three times');
+    });
+
+    await runTest('forces enableHighAccuracy=true and maximumAge=0', async () => {
+      navigator.geolocation.getAccurateCurrentPosition(
+        () => {}, () => {}, () => {},
+        { desiredAccuracy: 20, maxWait: 100, enableHighAccuracy: false, maximumAge: 99999 }
+      );
+      const w = lastWatcher();
+      assertEq(w.options.enableHighAccuracy, true, 'enableHighAccuracy forced to true');
+      assertEq(w.options.maximumAge, 0, 'maximumAge forced to 0');
+    });
+
+    await runTest('defaults applied when options omitted', async () => {
+      navigator.geolocation.getAccurateCurrentPosition(() => {}, () => {}, () => {});
+      const w = lastWatcher();
+      assertEq(w.options.maxWait, 10000, 'maxWait defaults to 10000');
+      assertEq(w.options.desiredAccuracy, 20, 'desiredAccuracy defaults to 20');
+      assertEq(w.options.timeout, 10000, 'timeout defaults to maxWait');
+      // Clean up the long-running watch so it doesn't leak into other tests.
+      navigator.geolocation.clearWatch(w.id);
+    });
+
+    const passed = results.filter(r => r.pass).length;
+    const failed = results.length - passed;
+    const summary = document.getElementById('summary');
+    summary.className = 'summary ' + (failed === 0 ? 'pass' : 'fail');
+    summary.textContent = `${passed} passed, ${failed} failed (${results.length} total)`;
+  }
+
+  runAll();
+</script>
+</body>
+</html>
