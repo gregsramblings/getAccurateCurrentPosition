@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>getAccurateCurrentPosition</title>
+<style>
+  :root { color-scheme: light dark; }
+  body { font: 16px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; max-width: 600px; margin: 2em auto; padding: 1em; line-height: 1.5; }
+  h1 { margin: 0 0 0.3em; }
+  p.lead { color: #666; margin-top: 0; }
+  ul { padding-left: 0; list-style: none; }
+  li { margin: 0.75em 0; }
+  a.card { display: block; padding: 1em; background: #f4f6fb; border-radius: 8px; text-decoration: none; color: inherit; border-left: 4px solid #2a6df4; }
+  a.card strong { display: block; color: #2a6df4; font-size: 1.05em; }
+  a.card span { display: block; color: #555; font-size: 0.9em; margin-top: 0.2em; }
+  small { color: #888; }
+  @media (prefers-color-scheme: dark) {
+    body { background: #1c1c1e; color: #ddd; }
+    p.lead, small { color: #aaa; }
+    a.card { background: #2c2c2e; }
+    a.card span { color: #bbb; }
+  }
+</style>
+</head>
+<body>
+<h1>getAccurateCurrentPosition</h1>
+<p class="lead">A small enhancement to <code>navigator.geolocation</code> that waits for GPS to refine its reading before returning.</p>
+<ul>
+  <li><a class="card" href="demo.html"><strong>Live GPS demo &rarr;</strong><span>Exercises the library against your device's real location.</span></a></li>
+  <li><a class="card" href="test.html"><strong>Automated test page &rarr;</strong><span>10 mocked scenarios verifying the library logic.</span></a></li>
+</ul>
+<small>Source: <a href="https://github.com/gregsramblings/getAccurateCurrentPosition">github.com/gregsramblings/getAccurateCurrentPosition</a></small>
+</body>
+</html>
