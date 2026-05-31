@@ -85,6 +85,30 @@ The following standard options are **set for you** and cannot be overridden:
 | [`test.html`](test.html) | 10 automated tests (mocked geolocation); open in any browser. |
 | [`index.html`](index.html) | Landing page linking the demo and tests. |
 
+## Roadmap
+
+Planned and under consideration. Contributions and opinions welcome — open an issue.
+
+**Modern API**
+- [ ] **Promise support** — call without callbacks to get a `Promise<GeolocationPosition>` back; `onProgress` moves into the options object. The existing positional-callback form keeps working.
+- [ ] **Cancellation** — accept an `AbortSignal` so a pending request can be cancelled (e.g. on component unmount).
+
+**TypeScript**
+- [ ] **Type definitions** — ship a `.d.ts` augmenting `navigator.geolocation`, with an accurate error type (the timeout-with-no-fix case resolves to `{ code: 3, message }`, not a real `GeolocationPositionError`).
+
+**Distribution**
+- [ ] **npm package** — publish as `get-accurate-current-position` with ESM + CJS + global builds and bundled types. *(This is the decision that shapes how Promises and TS ship — see note below.)*
+
+**Behavior & options**
+- [ ] **Return the best fix, not the last** — on timeout, return the most accurate reading seen rather than the most recent one.
+- [ ] **`maxSamples` option** — stop after N readings regardless of time or accuracy.
+- [ ] **Early exit on convergence** — resolve once accuracy stops improving, instead of always waiting out `maxWait`.
+
+**Project health**
+- [ ] **Headless tests + CI** — run the existing mocked suite under a headless runner with GitHub Actions.
+
+> **Direction:** Promises and TypeScript are most useful once the library is an npm package with bundled types. If we keep it a copy-the-script library instead, TypeScript ships as a hand-included `geo.d.ts` and Promises just work via the global. Deciding npm vs. script-only first will sequence everything else.
+
 ## License
 
 [MIT](LICENSE)
